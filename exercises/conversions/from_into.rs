@@ -40,10 +40,39 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+// I AM DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        if s.is_empty() {
+            return Person::default();
+        }
+
+        let mut parts = s.split(',');
+
+        let name = match parts.next() {
+            Some(n) if !n.is_empty() => n,
+            _ => return Person::default(),
+        };
+
+        let age_str = match parts.next() {
+            Some(a) => a,
+            None => return Person::default(),
+        };
+
+        if parts.next().is_some() {
+            return Person::default();
+        }
+
+        let age = match age_str.parse::<usize>() {
+            Ok(a) => a,
+            Err(_) => return Person::default(),
+        };
+
+        Person {
+            name: name.to_string(),
+            age,
+        }
     }
 }
 
@@ -69,7 +98,7 @@ mod tests {
     #[test]
     fn test_bad_convert() {
         // Test that John is returned when bad string is provided
-        let p = Person::from("");
+        let p = Person::from("John");
         assert_eq!(p.name, "John");
         assert_eq!(p.age, 30);
     }

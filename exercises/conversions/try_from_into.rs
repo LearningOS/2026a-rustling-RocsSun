@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+// I AM DONE
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -37,24 +37,51 @@ enum IntoColorError {
 // time, but the slice implementation needs to check the slice length! Also note
 // that correct RGB color values must be integers in the 0..=255 range.
 
+fn to_u8(v: i16) -> Result<u8, IntoColorError> {
+    u8::try_from(v).map_err(|_| IntoColorError::IntConversion)
+}
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
+
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        Ok(Color {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
     }
 }
 
 // Array implementation
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
+
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [r, g, b] = arr;
+        Ok(Color {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
     }
 }
 
 // Slice implementation
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
+
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let &[r, g, b] = slice else {
+            return Err(IntoColorError::BadLen);
+        };
+        Ok(Color {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
     }
 }
 
